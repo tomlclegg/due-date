@@ -19,3 +19,34 @@ due_date <- read_xls("data/1733082117820.xls",
 
 due_date <- as.data.table(due_date)
 
+
+# Fix some columns --------------------------------------------------------
+
+due_date <- due_date[2:.N]
+due_date <- due_date[, 2:ncol(due_date)]
+
+unique(due_date[[1]])
+setnames(due_date, 1, "year")
+due_date[, year := as.integer(year)]
+
+# Convert all numeric columns
+cols_num <- 2:ncol(due_date)
+due_date[, (cols_num) := lapply(.SD, as.numeric), .SDcols = cols_num]
+
+# Fix column names
+names(due_date) <- tolower(names(due_date))
+
+names(due_date)[2:3] <- paste0("reported_", c("antall", "prosent"))
+names(due_date)[22:23] <- paste0("week_", c("mean", "sd"))
+names(due_date) <- gsub(".*?([0-9]+.*)", "week_\\1", names(due_date))
+names(due_date) <- gsub(", ", "_", names(due_date))
+names(due_date) <- gsub("‑", "_", names(due_date))
+names(due_date) <- gsub("\\+", "_onwards", names(due_date))
+names(due_date) <- gsub("antall", "total", names(due_date))
+names(due_date) <- gsub("prosent", "pct", names(due_date))
+
+# Remove total
+due_date <- due_date[, !grepl("total", names(due_date)), with = FALSE]
+names(due_date) <- gsub("_pct", "", names(due_date))
+
+
