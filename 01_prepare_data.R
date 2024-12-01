@@ -50,3 +50,19 @@ due_date <- due_date[, !grepl("total", names(due_date)), with = FALSE]
 names(due_date) <- gsub("_pct", "", names(due_date))
 
 
+# Split datasets ----------------------------------------------------------
+
+# Coverage (total births with birth week reported)
+coverage <- due_date[, 1:2]
+due_date <- due_date[, -2, with = FALSE]
+
+birth_mean <- due_date[, c(1, 11:12)]
+due_date <- due_date[, -c(11:12), with = FALSE]
+
+
+
+# Save datasets -----------------------------------------------------------
+
+fwrite(due_date,   "data/processed/due_date.csv")
+fwrite(coverage,   "data/processed/coverage.csv")
+fwrite(birth_mean, "data/processed/birth_mean.csv")
