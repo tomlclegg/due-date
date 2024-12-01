@@ -41,7 +41,7 @@ names(due_date)[22:23] <- paste0("week_", c("mean", "sd"))
 names(due_date) <- gsub(".*?([0-9]+.*)", "week_\\1", names(due_date))
 names(due_date) <- gsub(", ", "_", names(due_date))
 names(due_date) <- gsub("‑", "_", names(due_date))
-names(due_date) <- gsub("\\+", "_onwards", names(due_date))
+names(due_date) <- gsub("\\+", "_plus", names(due_date))
 names(due_date) <- gsub("antall", "total", names(due_date))
 names(due_date) <- gsub("prosent", "pct", names(due_date))
 
@@ -59,6 +59,29 @@ due_date <- due_date[, -2, with = FALSE]
 birth_mean <- due_date[, c(1, 11:12)]
 due_date <- due_date[, -c(11:12), with = FALSE]
 
+
+# Prepare due_date --------------------------------------------------------
+
+
+
+due_date <- melt(due_date,
+                 id.vars = "year",
+                 variable.name = "week",
+                 value.name = "pct")
+
+due_date[, week := gsub("week_", "", week)]
+
+unique(due_date$week)
+
+# Remove plus value
+due_date[, week := gsub("_plus", "", week)]
+due_date[week == 43, comment := "week 43 plus"]
+
+# Reduce early weeks to one value
+due_date[grepl("_", week), comment := paste("week", week)]
+due_date[, week := sub(".*_", "", week)]
+
+due_date[, week := as.integer(week)]
 
 
 # Save datasets -----------------------------------------------------------
