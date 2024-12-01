@@ -13,8 +13,9 @@ library(readxl)
 library(data.table)
 library(zoo)
 
-due_date <- read_xls("data/1733080270062.xls",
-                     skip = 4)
+due_date <- read_xls("data/1733082117820.xls",
+                     skip = 4,
+                     na = "-")
 
 due_date <- as.data.table(due_date)
 
